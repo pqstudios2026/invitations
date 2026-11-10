@@ -80,6 +80,9 @@ body{margin:0;background:#d9c7a3;font-family:'Lora',Georgia,serif;color:var(--in
 @keyframes shmove{0%{transform:translate(40px,60px)}12%{transform:translate(40px,60px)}30%{transform:translate(170px,70px)}45%{transform:translate(70px,110px)}60%{transform:translate(180px,125px)}75%{transform:translate(100px,165px)}90%{transform:translate(150px,155px)}100%{transform:translate(40px,60px)}}
 @keyframes shrub{from{transform:rotate(-14deg)}to{transform:rotate(6deg)}}
 .shring{position:absolute;inset:-6px;border-radius:50%;pointer-events:none;z-index:2;border:3px solid rgba(255,255,255,.0);animation:none}
+.dd{position:absolute;z-index:2;pointer-events:none;white-space:nowrap;font:700 1.05rem 'Lora',serif;color:var(--deep);padding:3px 9px;border-radius:8px;background:rgba(250,245,232,.92);text-shadow:0 1px 0 #fff;opacity:0;animation:ddis .75s ease-out forwards}
+@keyframes ddis{0%{opacity:0;transform:translate(-50%,-50%) scale(.55);filter:blur(3px)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.08);filter:blur(0)}50%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(0)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2);filter:blur(9px)}}
+@media (prefers-reduced-motion:reduce){.dd{display:none}}
 .shint{margin:16px auto 0;max-width:300px;text-align:center;font-size:1.05rem;line-height:1.5;color:var(--deep);font-weight:600;transition:opacity .5s}
 .shint small{display:block;font-size:1rem;font-weight:500;color:#5d6b4f}
 .shint .arr{display:inline-block;animation:shbob 1s ease-in-out infinite}
@@ -381,7 +384,7 @@ sx.fillStyle=gr;sx.fill(hp);
 for(var i=0;i<260;i++){sx.fillStyle='rgba(255,255,255,'+(Math.random()*.7)+')';sx.fillRect(Math.random()*260,Math.random()*240,1.6,1.6)}
 sx.globalCompositeOperation='destination-out';
 function pos(e){var r=sc.getBoundingClientRect();return[(e.clientX-r.left)*260/r.width,(e.clientY-r.top)*240/r.height]}
-function scr(e){if(!down||done)return;var p=pos(e);sx.beginPath();sx.arc(p[0],p[1],24,0,7);puff(p[0],p[1],3);sx.fill();if(++moves%8===0)check()}
+function scr(e){if(!down||done)return;var p=pos(e);sx.beginPath();sx.arc(p[0],p[1],24,0,7);puff(p[0],p[1],3);decoy(p[0],p[1]);sx.fill();if(++moves%8===0)check()}
 function check(){
   var d=sx.getImageData(0,0,sc.width,sc.height).data,n=0,t=0;
   for(var y=0;y<sc.height;y+=12)for(var x=0;x<sc.width;x+=12){var a=d[(y*sc.width+x)*4+3];if(x/dpr>20&&x/dpr<240){t++;if(a<40)n++}}
@@ -396,6 +399,17 @@ function up(){down=false;clearTimeout(idleT);idleT=setTimeout(hintOn,3500)}
 sc.addEventListener('pointerup',up);sc.addEventListener('pointercancel',up);
 
 
+
+/* decoy dates: pop up while scratching, then dissolve immediately */
+var DD=['12 November 2026','21 November 2026','27 November 2026','9 December 2026','15 December 2026','20 December 2026','2 January 2027'],ddI=Math.random()*DD.length|0,ddT=0;
+function decoy(x,y){
+  var n=Date.now();if(done||calm||n-ddT<380)return;ddT=n;
+  ddI=(ddI+1+(Math.random()*(DD.length-1)|0))%DD.length;
+  var e=document.createElement('div');e.className='dd';e.textContent=DD[ddI];
+  e.style.left=Math.max(75,Math.min(185,x))+'px';e.style.top=Math.max(45,Math.min(185,y))+'px';
+  e.addEventListener('animationend',function(){e.remove()});
+  hw.appendChild(e);
+}
 /* dust falling while scratching (animated finger + real finger) */
 var dc=document.getElementById('dust'),dx=dc.getContext('2d'),hw=sc.parentNode,P=[],DC=['#b5c3a3','#8da07a','#d7e0cb','#ffffff','#7d9068','#c9b98a'],vis=false,lx=-1,ly=-1,calm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
 dc.width=340*dpr;dc.height=340*dpr;dx.scale(dpr,dpr);
@@ -405,7 +419,7 @@ function dloop(){
   if(!vis&&!P.length)return;
   if(vis&&!calm&&!done&&!shand.classList.contains('sh-off')){
     var r=shand.getBoundingClientRect(),h=hw.getBoundingClientRect(),tx=r.left-h.left+r.width*.33,ty=r.top-h.top+r.height*.05;
-    if(lx>=0&&Math.hypot(tx-lx,ty-ly)>.9&&tx>15&&tx<245&&ty>10&&ty<215)puff(tx,ty+4,2);
+    if(lx>=0&&Math.hypot(tx-lx,ty-ly)>.9&&tx>15&&tx<245&&ty>10&&ty<215)puff(tx,ty+4,2);decoy(tx,ty+4);
     lx=tx;ly=ty;
   }else lx=-1;
   dx.clearRect(0,0,340,340);
