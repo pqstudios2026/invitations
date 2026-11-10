@@ -214,7 +214,10 @@ textarea{min-height:90px;resize:vertical}
 .hero .par{max-width:min(340px,88vw);font-size:.8rem;line-height:1.5;overflow-wrap:break-word}
 .hero{padding-bottom:calc(16vh + env(safe-area-inset-bottom,0px))}
 /* ---- added: mandatory RSVP popup ---- */
-#rsvp{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(30,40,24,.75);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#rsvp{position:fixed;inset:0;z-index:200;display:none;align-items:flex-start;justify-content:center;padding:24px;background:none}
+#rsvp::before{content:"";position:absolute;inset:0;z-index:-1;background:rgba(30,40,24,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-mask-image:linear-gradient(#000 0,#000 52%,transparent 74%);mask-image:linear-gradient(#000 0,#000 52%,transparent 74%)}
+#rsvp .rc{margin-top:max(0px,env(safe-area-inset-top))}
+.credit{padding-bottom:110px}
 #rsvp.show{display:flex;animation:rf .5s ease both}
 @keyframes rf{from{opacity:0}to{opacity:1}}
 #rsvp .rc{width:100%;max-width:360px;text-align:center;background:var(--cream);color:var(--ink);border:1px solid var(--gold);outline:1px solid rgba(184,146,63,.35);outline-offset:-8px;border-radius:22px;padding:34px 24px 28px;box-shadow:0 20px 50px rgba(0,0,0,.4);animation:rp .7s cubic-bezier(.2,.9,.3,1.2) both}
@@ -443,7 +446,7 @@ e.style.opacity=.7+Math.random()*.3;c.appendChild(e)}})();
 D.querySelectorAll('.page h2,.end').forEach(function(h){var t=h.textContent.trim().split(/\s+/);h.setAttribute('aria-label',t.join(' '));h.textContent='';t.forEach(function(w,k){var x=D.createElement('span');x.className='wd';x.setAttribute('aria-hidden','true');x.style.setProperty('--w',k);x.textContent=w;h.appendChild(x);if(k<t.length-1)h.appendChild(D.createTextNode(' '))})});
 var rs=D.getElementById('rsvp'),rg=D.getElementById('rgo'),rd=D.getElementById('rdn'),rk=D.getElementById('rok'),opened=0,shown=0;
 function fin(){rs.classList.remove('show');R.classList.remove('lock')}
-function show(){if(shown)return;shown=1;rs.classList.add('show');R.classList.add('lock');rg.focus()}
+function show(){if(shown)return;shown=1;window.scrollTo(0,D.documentElement.scrollHeight);rs.classList.add('show');R.classList.add('lock');rg.focus()}
 rg.addEventListener('click',function(){opened=1});
 D.addEventListener('visibilitychange',function(){if(!D.hidden&&opened)rd.hidden=false});
 window.addEventListener('focus',function(){if(opened)rd.hidden=false});
